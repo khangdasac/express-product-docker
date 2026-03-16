@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý sản phẩm</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container mt-4">
+        <h1 class="mb-4">Quản lý sản phẩm</h1>
+        <div class="form mb-4">
+            <form action="/products" method="post" enctype="multipart/form-data">
+                <div class="form-group mb-3">
+                    <label for="name" class="form-label">Tên sản phẩm</label>
+                    <input class="form-control" type="text" name="name" required />
+                </div>
+                <div class="form-group mb-3">
+                    <label class="form-label" for="image">Hình ảnh</label>
+                    <input class="form-control" type="file" name="image" required />
+                </div>
+                <div class="form-group mb-3">
+                    <label class="form-label" for="price">Giá</label>
+                    <input class="form-control" type="number" name="price" step="0.01" required />
+                </div>
+                <div class="form-group mb-3">
+                    <label class="form-label" for="quantity">Số lượng</label>
+                    <input class="form-control" type="number" name="quantity" required />
+                </div>
+                <button type="submit" class="btn btn-primary">Thêm sản phẩm</button>
+            </form>
+        </div>
+        <form class="form-inline mb-3" action="/products" method="GET">
+            <input type="text" name="keyword" id="searchInput" class="form-control mr-2"
+                placeholder="Tìm theo tên sản phẩm">
+            <button type="submit" class="btn btn-primary">Search</button>
+            <a href="/products" class="btn btn-secondary ml-2">
+                Reset
+            </a>
+        </form>
+
+        <table class="table table-bordered table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Tên sản phẩm</th>
+                    <th>Hình ảnh</th>
+                    <th>Giá</th>
+                    <th>Số lượng</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (products && products.length) { %>
+                    <% products.forEach(function(product) { %>
+                        <tr>
+                            <td>
+                                <%= product.id %>
+                            </td>
+                            <td>
+                                <%= product.name %>
+                            </td>
+                            <td>
+                                <% if (product.image) { %>
+                                    <img src="<%= product.image %>" width="80" height="80" style="object-fit:cover">
+                                    <% } else { %>
+                                        No Image
+                                        <% } %>
+                            </td>
+                            <td>$<%= product.price %>
+                            </td>
+                            <td>
+                                <%= product.quantity %>
+                            </td>
+                            <td>
+                                <a href="/products/<%= product.id %>" class="btn btn-primary btn-sm">
+                                    Edit
+                                </a>
+                                <form action="/products/delete/<%= product.id %>" method="POST" style="display:inline;"
+                                    onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');">
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        <% }) %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="7" class="text-center">
+                                        No products found
+                                    </td>
+                                </tr>
+                                <% } %>
+            </tbody>
+        </table>
+    </div>
+
+
+    <script>
+
+        const params = new URLSearchParams(window.location.search);
+        const keyword = params.get("keyword");
+
+        if (keyword) {
+            document.getElementById("searchInput").value = keyword;
+        }
+
+    </script>
+
+
+</body>
+
+</html>
