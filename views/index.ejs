@@ -77,6 +77,9 @@
                                 <%= product.quantity %>
                             </td>
                             <td>
+                                <a href="/products/<%= product.id %>/detail" class="btn btn-info btn-sm">
+                                    View
+                                </a>
                                 <a href="/products/<%= product.id %>" class="btn btn-primary btn-sm">
                                     Edit
                                 </a>
@@ -105,9 +108,19 @@
 
         const params = new URLSearchParams(window.location.search);
         const keyword = params.get("keyword");
+        const successMsg = '<%= success || "" %>';
+        const errorMsg = '<%= error || "" %>';
 
         if (keyword) {
             document.getElementById("searchInput").value = keyword;
+        }
+
+        if (successMsg) {
+            alert(decodeURIComponent(successMsg));
+        }
+
+        if (errorMsg) {
+            alert("❌ " + decodeURIComponent(errorMsg));
         }
 
     </script>

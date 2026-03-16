@@ -47,6 +47,20 @@
             </form>
         </div>
     </div>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const successMsg = params.get("success");
+        const errorMsg = params.get("error");
+
+        if (successMsg) {
+            alert(decodeURIComponent(successMsg));
+        }
+
+        if (errorMsg) {
+            alert("❌ " + decodeURIComponent(errorMsg));
+        }
+    </script>
 </body>
 
 </html>

@@ -5,9 +5,9 @@ const { validatePayload } = require("../utils/validate");
 const Controller = {
     search: async (req, res) => {
         try {
-            const { keyword } = req.query;
+            const { keyword, success, error } = req.query;
             const products = await ProductModel.search(keyword);
-            return res.render("index", { products });
+            return res.render("index", { products, success, error });
 
         } catch (error) {
             console.log(error);
@@ -20,17 +20,17 @@ const Controller = {
             
             const errors = validatePayload(data, false, !!req.file);
             if (errors) {
-                return res.status(400).send(errors.join(", "));
+                return res.redirect("/products?error=" + encodeURIComponent(errors.join(", ")));
             }
 
             const image = await uploadFile(req.file);
             data.image = image;
 
             await ProductModel.create(data);
-            res.redirect("/products");
+            res.redirect("/products?success=Thêm sản phẩm thành công");
         } catch (error) {
             console.log(error);
-            res.status(500).send("Error creating product: " + error.message);
+            res.redirect("/products?error=" + encodeURIComponent("Lỗi thêm sản phẩm: " + error.message));
         }
     },
     delete: async (req, res) => {
@@ -44,10 +44,23 @@ const Controller = {
             }
             
             await ProductModel.delete(id);
-            res.redirect("/products");
+            res.redirect("/products?success=Xóa sản phẩm thành công");
         } catch (error) {
             console.log(error);
-            res.status(500).send("Error deleting product");
+            res.redirect("/products?error=" + encodeURIComponent("Lỗi xóa sản phẩm"));
+        }
+    },
+    viewDetail: async (req, res) => {
+        try {
+            const { id } = req.params;
+            const product = await ProductModel.getById(id);
+            if (!product) {
+                return res.status(404).send("Product not found");
+            }
+            res.render("detail", { product });
+        } catch (error) {
+            console.log(error);
+            res.status(500).send("Error getting product detail");
         }
     },
     edit: async (req, res) => {
@@ -74,7 +87,7 @@ const Controller = {
             
             const errors = validatePayload(data, true, !!req.file);
             if (errors) {
-                return res.status(400).send(errors.join(", "));
+                return res.redirect("/products?error=" + encodeURIComponent(errors.join(", ")));
             }
 
             let imageUrl = product.image;
@@ -87,10 +100,10 @@ const Controller = {
             }
 
             await ProductModel.update(id, { ...data, image: imageUrl });
-            res.redirect("/products");
+            res.redirect("/products?success=Cập nhật sản phẩm thành công");
         } catch (error) {
             console.log(error);
-            res.status(500).send("Error updating product: " + error.message);
+            res.redirect("/products?error=" + encodeURIComponent("Lỗi cập nhật sản phẩm: " + error.message));
         }
     }
 };

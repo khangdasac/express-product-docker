@@ -5,6 +5,7 @@ const upload = require("../middleware/upload");
 
 router.get("/", controller.search);
 router.post("/", upload, controller.create);
+router.get("/:id/detail", controller.viewDetail);
 router.post("/delete/:id", controller.delete);
 router.get("/:id", controller.edit);
 router.post("/:id", upload, controller.update);
